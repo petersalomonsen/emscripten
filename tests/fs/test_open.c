@@ -7,16 +7,32 @@
 
 #include <assert.h>
 #include <stdio.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include "emscripten.h"
 
 int main (int argc, char *argv[])
 {
-   FILE *fp;
+   int fh;
    int res;
    long len;
 
-   fp = fopen("testopen", "r");
-   res = fwrite("1234567890", 10, 1, fp);
-   fclose(fp);
-   puts("success");
-   return 0;
+    #if NODEFS
+    EM_ASM(
+        
+            FS.mkdir('yolo');
+            FS.mount(NODEFS, { root: '.' }, 'yolo');
+            FS.chdir('/yolo');
+        
+    );
+    #endif
+
+    fh = open("testopen", O_WRONLY | O_CREAT | O_EXCL | O_CLOEXEC, 0444);
+    if(fh == -1) {
+        puts("failure");
+    } else {
+        close(fh);
+        puts("success");
+    }
+    return 0;
 }

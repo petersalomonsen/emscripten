@@ -5318,10 +5318,14 @@ main( int argv, char ** argc ) {
     src = open(path_from_root('tests', 'fs', 'test_append.c')).read()
     self.do_run(src, 'success', force_c=True, js_engines=js_engines)
 
-  @also_with_noderawfs
   def test_fs_open(self, js_engines=None):
-    src = open(path_from_root('tests', 'fs', 'test_open.c')).read()
-    self.do_run(src, 'success', force_c=True, js_engines=js_engines)
+    orig_compiler_opts = self.emcc_args[:]
+    for fs in ['MEMFS', 'NODEFS']:
+      src = open(path_from_root('tests', 'fs', 'test_open.c')).read()
+      self.emcc_args = orig_compiler_opts + ['-D' + fs]
+      if fs == 'NODEFS':
+        self.emcc_args += ['-lnodefs.js']
+      self.do_run(src, 'success', force_c=True, js_engines=js_engines)
 
   def test_fs_mmap(self):
     orig_compiler_opts = self.emcc_args[:]
