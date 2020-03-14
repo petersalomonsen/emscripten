@@ -159,14 +159,14 @@ mergeInto(LibraryManager.library, {
         var mode = NODEFS.getMode(path);
         return NODEFS.createNode(parent, name, mode);
       },
-      mknod: function (parent, name, mode, dev) {
+      mknod: function (parent, name, mode, dev, create=false) {
         var node = NODEFS.createNode(parent, name, mode, dev);
         // create the backing node for this in the fs root as well
         var path = NODEFS.realPath(node);
         try {
           if (FS.isDir(node.mode)) {
             fs.mkdirSync(path, node.mode);
-          } else {
+          } else if(!create) {
             fs.writeFileSync(path, '', { mode: node.mode });
           }
         } catch (e) {
