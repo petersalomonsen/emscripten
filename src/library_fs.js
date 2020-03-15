@@ -642,7 +642,7 @@ FS.staticInit();` +
       return parent.node_ops.lookup(parent, name);
     },
     // generic function for all node creation
-    mknod: function(path, mode, dev, create) {
+    mknod: function(path, mode, dev) {
       var lookup = FS.lookupPath(path, { parent: true });
       var parent = lookup.node;
       var name = PATH.basename(path);
@@ -656,7 +656,7 @@ FS.staticInit();` +
       if (!parent.node_ops.mknod) {
         throw new FS.ErrnoError({{{ cDefine('EPERM') }}});
       }
-      return parent.node_ops.mknod(parent, name, mode, dev, create);
+      return parent.node_ops.mknod(parent, name, mode, dev);
     },
     // helpers to create specific types of nodes
     create: function(path, mode) {
@@ -1036,7 +1036,7 @@ FS.staticInit();` +
           }
         } else {
           // node doesn't exist, try to create it
-          node = FS.mknod(path, mode, 0, true);
+          node = FS.mknod(path, mode, 0);
           created = true;
         }
       }

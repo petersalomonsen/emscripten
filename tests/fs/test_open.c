@@ -29,10 +29,13 @@ int main (int argc, char *argv[])
 
     fh = open("testopen", O_WRONLY | O_CREAT | O_EXCL | O_CLOEXEC, 0444);
     if(fh == -1) {
-        puts("failure");
-    } else {
-        close(fh);
-        puts("success");
+        return 1;
     }
+
+    ftruncate(fh, 0);
+
+    close(fh);
+    puts("success");
+    
     return 0;
 }
